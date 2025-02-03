@@ -1,0 +1,42 @@
+Project(ThymusQuantification)
+
+cmake_minimum_required(VERSION 2.6)
+
+SET (LIBRARY_OUTPUT_PATH ${ThymusQuantification_BINARY_DIR}/bin/ 
+        CACHE PATH 
+        "Single output directory for building all libraries."
+        FORCE)
+SET (EXECUTABLE_OUTPUT_PATH ${ThymusQuantification_BINARY_DIR}/bin 
+        CACHE PATH 
+        "Single output directory for building all executables."
+        FORCE)
+SET (BUILD_SHARED_LIBS FALSE CACHE BOOL "build shared libs" )
+
+#Find ITK
+FIND_PACKAGE( ITK REQUIRED)
+IF ( ITK_FOUND )
+  INCLUDE( ${ITK_USE_FILE} )
+ELSE (ITK_FOUND)
+  MESSAGE(ERROR "Cannot build without a ITK build tree.")
+ENDIF ( ITK_FOUND )
+
+ADD_LIBRARY( ThymusSegmentation 
+	     OptionList.cxx
+             CommonFunctions.cxx
+	     ThymusSegmentationAlgorithms.cxx )
+
+SET( SEGMENTATION_ITK_LIBS  
+     ThymusSegmentation
+     ITKAlgorithms
+     ITKBasicFilters
+     ITKStatistics
+     ITKNumerics
+     ITKCommon
+     ITKIO
+)
+
+ADD_EXECUTABLE(ThymusQuantification ThymusQuantification.cxx)
+TARGET_LINK_LIBRARIES(ThymusQuantification ${SEGMENTATION_ITK_LIBS} )
+
+
+

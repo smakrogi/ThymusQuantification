@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>NIH-NIA-TGB</category>
+  <title>MaskOverlapAnalysisNIA</title>
+  <description> This is a software module for computation of overlap measures from a test and reference mask image. For more information please contact Sokratis Makrogiannis at makrogianniss@mail.nih.gov. 3T MR Imaging Research Facility, NIA/NIH.
+  </description>
+  <version> 0.1 </version>
+  <documentation-url> http://www.grc.nia.nih.gov/ </documentation-url>
+  <license></license>
+  <contributor>
+            Sokratis Makrogiannis, Ph.D., Kenneth Fishbein, Ph.D., Ramona Ramachandran, M.D.,  Allison Stroud, Chee Chia, M.D., Richard Spencer, M.D., Ph.D.
+  </contributor>
+  <acknowledgements>
+            Many thanks to collaborators from Clinical Research Branch of NIA for their support.
+  </acknowledgements>
+  <parameters>
+    <label>Subject ID</label>
+    <description>Subject ID used for file naming</description>
+    <string>
+      <name>subjectID</name>
+      <longflag>subjectid</longflag>
+      <description>Subject ID used for file naming</description>
+      <label>Subject ID</label>
+      <default>SubjectID</default>
+    </string>
+  </parameters>  
+  <parameters>
+    <label>Input/Output</label>
+    <description>Input/output parameters</description>
+    <image>
+      <name>segmentationFile</name>
+      <label>Input Test Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <default>None</default>
+      <description>Input test volume</description>
+    </image>
+    <image>
+      <name>referenceStandardFile</name>
+      <label>Input Reference Volume</label>
+      <channel>input</channel>
+      <index>1</index>
+      <default>None</default>
+      <description>Input reference volume</description>
+    </image>
+    <file>
+      <label> Text output file </label>
+      <longflag>csvOutputFile</longflag>
+      <default>validation.txt</default>
+    </file>
+  </parameters>
+  <parameters>
+    <label>Validation results</label>
+    <integer>
+      <name>volumeInGroundTruthGUI</name>
+      <label>Ground Truth Volume (mm^3)</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Ground Truth Volume (mm^3)</description>
+    </integer>
+    <integer>
+      <name>volumeInDetectionGUI</name>
+      <label>Detection Pixels Volume (mm^3)</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Detection Volume (mm^3)</description>
+    </integer>
+    <integer>
+      <name>volumeInOverlapGUI</name>
+      <label>Overlap Pixels (px)</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Overlap Volume (mm^3)</description>
+    </integer>  
+    <integer>
+      <name>volumeInUnionGUI</name>
+      <label>Union Pixels (px)</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Union Volume (mm^3)</description>
+    </integer>  
+    <float>
+      <name>overlapScoreGUI</name>
+      <label>Overlap Score (Overlap/Union)</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Overlap Score (Overlap/Union)</description>
+    </float>  
+    <float>
+      <name>diceScoreGUI</name>
+      <label>DICE Score</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>DICE Score</description>
+    </float>  
+    <float>
+      <name>classificationAccuracyGUI</name>
+      <label>Classification Accuracy</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Classification Accuracy</description>
+    </float>  
+    <float>
+      <name>volumeDifferenceGUI</name>
+      <label>Volume Difference</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Volume Difference</description>
+    </float>  
+  </parameters>
+</executable>

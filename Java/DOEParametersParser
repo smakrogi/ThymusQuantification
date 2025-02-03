@@ -1,0 +1,2 @@
+#!/bin/bash
+java -classpath /home/makrogianniss/Software/src/sokrepo/ThymusQuantification/trunk/Java/DOEParametersParser.jar DOEParametersParser $*

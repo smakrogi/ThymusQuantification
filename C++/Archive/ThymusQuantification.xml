@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>NIH-NIA-3T</category>
+  <title>ThymusQuantificationNIA3T</title>
+  <description>This is a software module for quantification of the Thymus from MR imaging data. The module uses a set of Non-suppressed (NS), Water-suppressed (WS) and Fat-suppressed images of the same subject to segment the Thymus and compute its composition. The module will run faster for cropped images around the Thymus. Different segmentation algorithms can be selected from options in the module. The fat ratio is computed by (WS/(WS+FS)) and the water ratio as (FS/(WS+FS)). For more information please contact Sokratis Makrogiannis at makrogianniss@mail.nih.gov. 3T MR Imaging Research Facility, NIA/NIH.
+  </description>
+  <version> 0.2 </version>
+  <documentation-url> http://www.grc.nia.nih.gov/ </documentation-url>
+  <license></license>
+  <contributor>
+    Sokratis Makrogiannis, Ph.D., Kenneth Fishbein, Ph.D., Ramona Ramachandran, M.D.,  Allison Stroud, Chee Chia, M.D., Richard Spencer, M.D., Ph.D.
+  </contributor>
+  <acknowledgements>
+    Many thanks to collaborators from Clinical Research Branch of NIA for their support.
+  </acknowledgements>
+  <parameters>
+    <label>Subject ID</label>
+    <description>Subject ID used for file naming</description>
+    <string>
+      <name>subjectID</name>
+      <longflag>subjectid</longflag>
+      <description>Subject ID used for file naming</description>
+      <label>Subject ID</label>
+      <default>SubjectID</default>
+    </string>
+  </parameters>
+  <parameters>
+    <label>Input/Output</label>
+    <description>Input/output parameters</description>
+    <image>
+      <name>inputVolumeNS</name>
+      <longflag>nsimage</longflag> 
+      <label>Input Volume NS</label>
+      <channel>input</channel>
+      <default>Dixon</default>
+      <description>NS Input volume</description>
+    </image>
+    <image>
+      <name>inputVolumeWS</name>
+      <label>Input Volume WS</label>
+      <channel>input</channel>
+      <index>0</index>
+      <default>None</default>
+      <description>WS Input volume</description>
+    </image>
+    <image>
+      <name>inputVolumeFS</name>
+      <label>Input Volume FS</label>
+      <channel>input</channel>
+      <index>1</index>
+      <default>None</default>
+      <description>FS Input volume</description>
+    </image>
+    <directory>
+      <name>outputDirectory</name>
+      <longflag>outputdir</longflag>
+      <label>Output Directory</label>
+      <channel>output</channel>
+      <description>The directory in which output files are stored.</description>
+    </directory>
+    <image type="label">
+      <name>outputVolume</name>
+      <longflag>outmask</longflag>
+      <label>Output Mask Volume</label>
+      <channel>output</channel>
+      <default>MaskImage</default>
+      <description>Output mask.</description>
+    </image>
+  </parameters>
+  <parameters>
+    <label>Fiducial marker</label>
+    <description>Define fiducial marker position</description>
+      <point multiple="false" coordinateSystem="ras">
+	<name>seed</name>
+	<description>Input seed</description> 
+	<longflag>seed</longflag> 
+      </point>
+  </parameters>
+  <parameters>
+    <label>Segmentation Parameters</label>
+    <description> Parameters and settings of segmentation algorithms. </description>
+    <string-enumeration>
+      <name>gradientalgorithmGUI</name>
+      <longflag>gradalgo</longflag>
+      <description>Grad algos</description>
+      <label>Gradient algos</label>
+      <default>PARZEN</default>
+      <element>CONVENTIONAL</element>
+      <element>PARZEN</element>
+    </string-enumeration>      
+    <string-enumeration>
+      <name>levelsetinitializationalgorithmGUI</name>
+      <longflag>lsinitalgo</longflag>
+      <description>Level-set init. algos</description>
+      <label>Level-set init. algos</label>
+      <default>FAST_MARCHING</default>
+      <element>SEED_BASED_ROI</element>
+      <element>FAST_MARCHING</element>
+    </string-enumeration>      
+    <string-enumeration>
+      <name>segmentationalgorithmGUI</name>
+      <longflag>segalgo</longflag>
+      <description>Segmentation algos</description>
+      <label> Seg. algos</label>
+      <default>WS_GAC</default>
+      <element>WS_KMEANS</element>
+      <element>REG_GROW_3D</element>
+      <element>WS_LEV_SETS</element>
+      <element>LEV_SETS_3D</element>
+      <element>WS_GAC</element>
+      <element>GAC_3D</element>
+      <element>WS_CHAN_VESE</element>
+    </string-enumeration>
+  </parameters>
+  <parameters>
+    <label>Algorithm Parameters</label>
+    <description>Parameters of the methodology</description>
+    <float>
+      <name>halfROIEdgeLengthGUI</name>
+      <longflag>halfROIEdgeLength</longflag> 
+      <description>Half length of cubical ROI edge length (mm)</description>
+      <label>ROI half edge parameter (mm)</label>
+      <default>2.0</default>
+    </float>
+    <integer>
+      <name>nClustersGUI
+      </name>
+      <longflag>nClusters</longflag> 
+      <description>Number of required clusters</description>
+      <label>Cluster number</label>
+      <default>3</default>
+    </integer>    
+    <float>
+      <name>rgMultiplierGUI</name>
+      <longflag>rgmult</longflag> 
+      <description>Region growing multiplication factor</description>
+      <label>Region growing multiplication factor</label>
+      <default>0.5</default>
+    </float>
+    <integer>
+      <name>rgIterationsGUI</name>
+      <longflag>rgit</longflag> 
+      <description>Region growing iterations #</description>
+      <label>Region growing iterations #</label>
+      <default>3</default>
+    </integer>
+    <integer>
+      <name>parzenRadiusGUI</name>
+      <longflag>parzrad</longflag> 
+      <description>Parzen kernel radius</description>
+      <label>Parzen kernel radius</label>
+      <default>1</default>
+    </integer>  
+    <float>
+      <name>parzenBandwidthGUI</name>
+      <longflag>parzband</longflag> 
+      <description>Parzen kernel bandwidth</description>
+      <label>Parzen kernel bandwidth</label>
+      <default>0.1</default>
+    </float>  
+  </parameters>
+  <parameters>
+    <label>Level set parameters</label>
+    <description>Parameters for level set segmentation</description>
+    <float>
+      <name>sigmoidBetaGUI</name>
+      <longflag>lssigmoidbeta</longflag> 
+      <description>Sigmoid function beta</description>
+      <label>Sigmoid beta</label>
+      <default>50.0</default>
+    </float>
+    <float>
+      <name>sigmoidBetaAlphaRatioGUI</name>
+      <longflag>lssigmoidbetaalpharatio</longflag> 
+      <description>Sigmoid beta/alpha</description>
+      <label>Sigmoid beta/alpha</label>
+      <default>4.5</default>
+    </float>
+    <double>
+      <name>fastmarchingStoppingTimeGUI</name>
+      <longflag>fmstoptime</longflag> 
+      <description>Fast Marching Stopping Time</description>
+      <label>Fast Marching Stopping Time</label>
+      <default>10.0</default>
+    </double>
+    <float>
+      <name>levelsetPropagationScalingFactorGUI</name>
+      <longflag>lspropscale</longflag> 
+      <description>Level set propagation scaling factor</description>
+      <label>Level set propagation scaling</label>
+      <default>1.0</default>
+    </float>
+    <float>
+      <name>levelsetCurvatureScalingFactorGUI</name>
+      <longflag>lscurvscale</longflag> 
+      <description>Level set curvature scaling factor</description>
+      <label>Level set curvature scaling factor</label>
+      <default>0.1</default>
+    </float>
+    <float>
+      <name>levelsetAdvectionScalingFactorGUI</name>
+      <longflag>lsadvscale</longflag> 
+      <description>Level set advection scaling factor</description>
+      <label>Level set advection scaling</label>
+      <default>2.5</default>
+    </float>
+    <integer>
+      <name>levelsetMaximumIterationsGUI</name>
+      <longflag>lsmaxit</longflag> 
+      <description>Level set maximum iterations #</description>
+      <label>Level set maximum iterations #</label>
+      <default>600</default>
+    </integer>
+    <float>
+      <name>levelsetMaximumRMSErrorGUI</name>
+      <longflag>lsmaxrmserror</longflag> 
+      <description>Level set maximum rms error</description>
+      <label>Level set maximum rms error</label>
+      <default>0.0</default>
+    </float>
+    <double>
+      <name>chanveseCurvatureWeightGUI</name>
+      <longflag>cvcurvw</longflag> 
+      <description>Chan-Vese length regularization term</description>
+      <label>Chan-Vese curvature weight</label>
+      <default>0.0</default>      
+    </double>
+    <double>
+      <name>chanveseAreaWeightGUI</name>
+      <longflag>cvareaw</longflag> 
+      <description>Chan-Vese area regularization term</description>
+      <label>Chan-Vese area weight</label>
+      <default>0.0</default>      
+    </double>
+    <double>
+      <name>chanveseVolumeWeightGUI</name>
+      <longflag>cvvolw</longflag> 
+      <description>Chan-Vese volume regularization term</description>
+      <label>Chan-Vese volume weight</label>
+      <default>0.0</default>      
+    </double>
+    <double>
+      <name>chanveseVolumeGUI</name>
+      <longflag>cvvol</longflag> 
+      <description>Chan-Vese volume</description>
+      <label>Chan-Vese volume</label>
+      <default>0.0</default>      
+    </double>
+    <double>
+      <name>chanveseOverlapWeightGUI</name>
+      <longflag>cvovw</longflag> 
+      <description>Chan-Vese overlap penalty weight</description>
+      <label>Chan-Vese overlap weight</label>
+      <default>0.0</default>      
+    </double>
+    <string-enumeration>
+      <name>multiscaleGeneratorGUI</name>
+      <longflag>lsnscalealgo</longflag>
+      <description>Level-set multi-scle algos</description>
+      <label>Level-set scale generation algos</label>
+      <default>PARZEN_EDGES</default>
+      <element>PARZEN_EDGES</element>
+      <element>GAUSSIAN</element>
+      <element>DIFFUSION</element>
+      <element>MEDIAN</element>
+    </string-enumeration>      
+    <integer>
+      <name>levelsetNScalesGUI</name>
+      <longflag>lsnscales</longflag> 
+      <description>Scales # for segmentation</description>
+      <label>Scales # for segmentation</label>
+      <default>1</default>
+    </integer>
+    <float>
+      <name>parzenBandwidthBaseGUI</name>
+      <longflag>parzbandbase</longflag> 
+      <description>Scale generator Parzen base</description>
+      <label>Scale generator Parzen base</label>
+      <default>1.1</default>
+    </float>
+  </parameters>
+  <parameters>
+    <label>Quantification output</label>
+    <integer>
+      <name>volumepxReturnIntGUI</name>
+      <label>Thymus volume(px)</label>
+      <channel>output</channel>
+      <default>0</default>
+      <description>Thymus volume(px)</description>
+    </integer>
+    <float>
+      <name>volumemm3ReturnFloatGUI</name>
+      <label>Thymus volume(mm^3)</label>
+      <channel>output</channel>
+      <default>0.0</default>
+      <description>Thymus volume(mm^3)</description>
+    </float>
+    <float>
+      <name>fatratiomeanReturnFloatGUI</name>
+      <label>Fat ratio mean</label>
+      <channel>output</channel>
+      <default>0.0</default>
+      <description>Fat ratio mean</description>
+    </float>
+    <float>
+      <name>fatratiormsReturnFloatGUI</name>
+      <label>Fat ratio rms error</label>
+      <channel>output</channel>
+      <default>0.0</default>
+      <description>Fat ratio rms</description>
+    </float>
+    <float>
+      <name>waterratiomeanReturnFloatGUI</name>
+      <label>Water ratio mean</label>
+      <channel>output</channel>
+      <default>0.0</default>
+      <description>Water ratio mean.</description>
+    </float>
+    <float>
+      <name>waterratiormsReturnFloatGUI</name>
+      <label>Water ratio rms error</label>
+      <channel>output</channel>
+      <default>0.0</default>
+      <description>Water ratio rms.</description>
+    </float>
+  </parameters>
+</executable>
